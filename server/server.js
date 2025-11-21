@@ -25,8 +25,7 @@ mongoose.connect(MONGO_URI, {
 .then(() => console.log('Connected to MongoDB'))
 .catch(err => console.warn('MongoDB connection error:', err))
 
-/ CONTACT API
-// --------------------------
+// CONTACT API
 app.post('/api/contact', async (req, res) => {
   const { name, email, message } = req.body
 
@@ -43,4 +42,19 @@ app.post('/api/contact', async (req, res) => {
     console.error(err)
     res.status(500).json({ error: 'Server error' })
   }
+})
+
+// PRODUCTION MODE
+if (process.env.NODE_ENV === 'production') {
+  const clientPath = path.join(__dirname, '..', 'client', 'dist')
+
+  app.use(express.static(clientPath))
+
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(clientPath, 'index.html'))
+  })
+}
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`)
 })
