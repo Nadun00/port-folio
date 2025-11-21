@@ -24,3 +24,23 @@ mongoose.connect(MONGO_URI, {
 })
 .then(() => console.log('Connected to MongoDB'))
 .catch(err => console.warn('MongoDB connection error:', err))
+
+/ CONTACT API
+// --------------------------
+app.post('/api/contact', async (req, res) => {
+  const { name, email, message } = req.body
+
+  if (!email || !message) {
+    return res.status(400).json({ error: 'Missing required fields' })
+  }
+
+  try {
+    const msg = new Message({ name, email, message })
+    await msg.save()
+
+    res.json({ ok: true })
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: 'Server error' })
+  }
+})
